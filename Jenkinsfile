@@ -27,7 +27,7 @@ pipeline {
                     // Con esta función, activamos el entorno de SonarQube configurado en Jenkins.
                     withSonarQubeEnv(SONARQUBE_SERVER) {
                         // Ejecutamos el análisis de SonarQube usando Maven
-                        sh 'mvn sonar:sonar'
+                        sh 'mvn sonar:sonar'  // No es necesario usar 'nohup'
                     }
                     
                     echo 'Análisis de SonarQube finalizado.'
