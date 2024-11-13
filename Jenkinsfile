@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     environment {
@@ -26,7 +25,7 @@ pipeline {
                     
                     // Con esta función, activamos el entorno de SonarQube configurado en Jenkins.
                     withSonarQubeEnv(SONARQUBE_SERVER) {
-                        // Ejecutamos el análisis de SonarQube usando Maven
+                        // Ejecutamos el análisis de SonarQube sin nohup
                         sh 'mvn sonar:sonar'  // No es necesario usar 'nohup'
                     }
                     
@@ -57,3 +56,4 @@ pipeline {
         }
     }
 }
+
