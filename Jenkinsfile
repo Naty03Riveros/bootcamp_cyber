@@ -1,39 +1,59 @@
+
 pipeline {
     agent any
     environment {
-        // Definir el nombre del servidor de SonarQube configurado en Jenkins
-        SONARQUBE_SERVER = 'NPY'  // Asegúrate de que este nombre coincida con la configuración de Jenkins
+        SONARQUBE_SERVER = 'NPY'  // Asegúrate de que este nombre coincida con la configuración en Jenkins
     }
     stages {
         stage('Checkout') {
             steps {
-                // Clona el código desde GitHub en la rama 'main'
+                echo 'Clonando el repositorio...'
+                // Clonamos el repositorio desde GitHub
                 git branch: 'main', url: 'https://github.com/Naty03Riveros/bootcamp_cyber.git'
             }
         }
         stage('Build') {
             steps {
-                // Aquí agregas el comando para compilar el proyecto. Por ejemplo, si usas Maven:
+                echo 'Compilando el proyecto...'
+                // Aquí se compila el proyecto, si es necesario, o se ejecuta alguna acción como tests.
                 sh 'mvn clean install'
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Ejecuta el análisis de SonarQube con la configuración de servidor 'NPY'
-                    withSonarQubeEnv(SONARQUBE_SERVER) {  
-                        // Si estás usando Maven para el análisis de SonarQube
+                    echo 'Iniciando el análisis de SonarQube...'
+                    
+                    // Con esta función, activamos el entorno de SonarQube configurado en Jenkins.
+                    withSonarQubeEnv(SONARQUBE_SERVER) {
+                        // Ejecutamos el análisis de SonarQube usando Maven
                         sh 'mvn sonar:sonar'
                     }
+                    
+                    echo 'Análisis de SonarQube finalizado.'
                 }
             }
         }
-        // Puedes agregar más etapas si lo deseas, como pruebas, despliegue, etc.
+        stage('Wait for SonarQube Analysis') {
+            steps {
+                script {
+                    // Este paso espera a que el análisis de SonarQube se complete
+                    echo 'Esperando a que SonarQube complete el análisis...'
+                    waitForQualityGate abortPipeline: true
+                    echo 'Análisis completado.'
+                }
+            }
+        }
     }
     post {
-        // Aquí puedes agregar acciones a realizar después de la ejecución del pipeline, como notificaciones
         always {
-            echo 'Pipeline finished!'
+            echo 'Pipeline finalizado.'
+        }
+        success {
+            echo 'El análisis de SonarQube fue exitoso.'
+        }
+        failure {
+            echo 'El análisis de SonarQube falló.'
         }
     }
 }
