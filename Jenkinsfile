@@ -15,7 +15,7 @@ pipeline {
             steps {
                 echo 'Compilando el proyecto...'
                 // Aquí se compila el proyecto, si es necesario, o se ejecuta alguna acción como tests.
-                sh 'mvn clean install'
+                bat 'mvn clean install'
             }
         }
         stage('SonarQube Analysis') {
@@ -26,7 +26,7 @@ pipeline {
                     // Con esta función, activamos el entorno de SonarQube configurado en Jenkins.
                     withSonarQubeEnv(SONARQUBE_SERVER) {
                         // Ejecutamos el análisis de SonarQube sin nohup
-                        sh 'mvn sonar:sonar'  // No es necesario usar 'nohup'
+                        bat 'mvn sonar:sonar'  // No es necesario usar 'nohup'
                     }
                     
                     echo 'Análisis de SonarQube finalizado.'
