@@ -1,8 +1,9 @@
-pipeline {
+
+pipeline { 
     agent any
     environment {
-        // Definir el nombre del servidor de SonarQube configurado en Jenkins
-        SONARQUBE_SERVER = 'SonarQube'  // Este es el nombre configurado en Jenkins
+        // Nombre del servidor de SonarQube configurado en Jenkins
+        SONARQUBE_SERVER = 'NYP'
     }
     stages {
         stage('Checkout') {
@@ -13,7 +14,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                // Aquí agregas el comando para compilar el proyecto. Por ejemplo, si usas Maven:
+               
                 sh 'mvn clean install'
             }
         }
@@ -22,16 +23,21 @@ pipeline {
                 script {
                     // Ejecuta el análisis de SonarQube
                     withSonarQubeEnv(SONARQUBE_SERVER) {  
-                        // Si estás usando Maven para el análisis de SonarQube
-                        sh 'mvn sonar:sonar'
+                        // Comando Maven para análisis de SonarQube con parámetros adicionales
+                        sh '''
+                        mvn sonar:sonar \
+                          -Dsonar.projectKey=bootcamp_cyber \
+                          -Dsonar.host.url=$SONAR_HOST_URL \
+                          -Dsonar.login=$SONAR_AUTH_TOKEN
+                        '''
                     }
                 }
             }
         }
-        // Puedes agregar más etapas si lo deseas, como pruebas, despliegue, etc.
+      
     }
     post {
-        // Aquí puedes agregar acciones a realizar después de la ejecución del pipeline, como notificaciones
+        // Acciones después de la ejecución del pipeline
         always {
             echo 'Pipeline finished!'
         }
